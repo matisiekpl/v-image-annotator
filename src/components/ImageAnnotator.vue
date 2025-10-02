@@ -1,5 +1,41 @@
 <template>
   <div class="annotator-wrapper" ref="wrapperRef">
+    <div class="mb-2">
+      <button
+        type="button"
+        :aria-pressed="addTextMode ? 'true' : 'false'"
+        @click="toggleAddTextMode"
+        :class="addTextMode ? 'bg-blue-700 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'"
+        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        Add text
+      </button>
+      <button
+        type="button"
+        @click="handleUndo"
+        :disabled="!canUndo"
+        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        @click="handleRedo"
+        :disabled="!canRedo"
+        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
+      >
+        Redo
+      </button>
+      <button
+        type="button"
+        :aria-pressed="drawMode ? 'true' : 'false'"
+        @click="toggleDrawMode"
+        :class="['ml-2', drawMode ? 'bg-emerald-700 hover:bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700']"
+        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      >
+        Free draw
+      </button>
+    </div>
     <v-stage
       ref="stageRef"
       :config="{ width: stageWidth, height: stageHeight }"
@@ -120,42 +156,6 @@
           <input type="color" :value="currentColor" @input="onColorInput($event)" @change="onColorChangeCommit" class="h-4 w-6 border-0 p-0 bg-transparent cursor-pointer" />
         </label>
       </div>
-    </div>
-    <div class="mt-2">
-      <button
-        type="button"
-        :aria-pressed="addTextMode ? 'true' : 'false'"
-        @click="toggleAddTextMode"
-        :class="addTextMode ? 'bg-blue-700 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'"
-        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        Add text
-      </button>
-      <button
-        type="button"
-        @click="handleUndo"
-        :disabled="!canUndo"
-        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
-      >
-        Undo
-      </button>
-      <button
-        type="button"
-        @click="handleRedo"
-        :disabled="!canRedo"
-        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
-      >
-        Redo
-      </button>
-      <button
-        type="button"
-        :aria-pressed="drawMode ? 'true' : 'false'"
-        @click="toggleDrawMode"
-        :class="['ml-2', drawMode ? 'bg-emerald-700 hover:bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700']"
-        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
-      >
-        Free draw
-      </button>
     </div>
   </div>
   
