@@ -119,7 +119,7 @@
         />
       </v-layer>
     </v-stage>
-    <div v-if="showTooltip" :style="{ position: 'absolute', left: tooltipX + 'px', top: tooltipY + 'px', transform: 'translate(-50%, -100%)' }" class="pointer-events-none">
+    <div v-if="showTooltip" :style="{ position: 'absolute', left: tooltipX + 'px', top: tooltipY + 'px', transform: 'translate(-50%, -10%)' }" class="pointer-events-none">
       <div class="relative pointer-events-auto flex items-center gap-2 rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-gray-300">
         <div class="group relative">
           <button
