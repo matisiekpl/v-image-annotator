@@ -44,81 +44,83 @@
         Redo
       </Button>
     </div>
-    <v-stage
-      ref="stageRef"
-      :config="{ width: stageWidth, height: stageHeight }"
-      @mousedown="handleStageMouseDown"
-      @touchstart="handleStageMouseDown"
-      @mousemove="handleStageMouseMove"
-      @mouseup="handleStageMouseUp"
-      @touchmove="handleStageMouseMove"
-      @touchend="handleStageMouseUp"
-    >
-      <v-layer>
-        <v-image :config="{ image: imageObj }"></v-image>
-      </v-layer>
-      <v-layer ref="textLayerRef">
-        <v-line
-          v-for="item in lines"
-          :key="item.id"
-          :ref="el => setDrawNodeRef(item.id, el)"
-          :config="{
-            x: item.x || 0,
-            y: item.y || 0,
-            points: item.points,
-            stroke: item.stroke,
-            strokeWidth: item.strokeWidth,
-            tension: 0.5,
-            lineCap: 'round',
-            lineJoin: 'round',
-            draggable: true,
-            name: 'draw-node'
-          }"
-          @click="() => toggleSelectDraw(item.id)"
-          @tap="() => toggleSelectDraw(item.id)"
-          @dragend="(e) => handleDrawDragEnd(item.id, e)"
-        />
-        <v-text
-          v-for="item in texts"
-          :key="item.id"
-          :ref="el => setTextNodeRef(item.id, el)"
-          :config="{
-            text: item.text,
-            x: item.x,
-            y: item.y,
-            fontSize: item.fontSize,
-            draggable: true,
-            width: item.width,
-            name: 'text-node',
-            visible: !(isEditing && editingId === item.id),
-            fill: item.fill || '#111827',
-            dragBoundFunc: function(pos) {
-              const iw = imageWidth.value || stageWidth
-              const ih = imageHeight.value || stageHeight
-              const w = Math.max(0, this.width())
-              const h = Math.max(0, this.height())
-              const minX = 0
-              const maxX = Math.max(0, iw - w)
-              const minY = 0
-              const maxY = Math.max(0, ih - h)
-              let nx = Math.min(Math.max(minX, pos.x), maxX)
-              let ny = Math.min(Math.max(minY, pos.y), maxY)
-              return { x: nx, y: ny }
-            },
-          }"
-          @click="() => toggleSelectText(item.id)"
-          @tap="() => toggleSelectText(item.id)"
-          @dblclick="() => handleTextDblClick(item.id)"
-          @dbltap="() => handleTextDblClick(item.id)"
-          @transform="() => handleTransform(item.id)"
-          @dragend="(e) => handleDragEnd(item.id, e)"
-        />
-        <v-transformer
-          v-if="selectedId && !isEditing"
-          ref="transformerRef"
-        />
-      </v-layer>
-    </v-stage>
+    <div class="stage-rounded">
+      <v-stage
+        ref="stageRef"
+        :config="{ width: stageWidth, height: stageHeight }"
+        @mousedown="handleStageMouseDown"
+        @touchstart="handleStageMouseDown"
+        @mousemove="handleStageMouseMove"
+        @mouseup="handleStageMouseUp"
+        @touchmove="handleStageMouseMove"
+        @touchend="handleStageMouseUp"
+      >
+        <v-layer>
+          <v-image :config="{ image: imageObj }"></v-image>
+        </v-layer>
+        <v-layer ref="textLayerRef">
+          <v-line
+            v-for="item in lines"
+            :key="item.id"
+            :ref="el => setDrawNodeRef(item.id, el)"
+            :config="{
+              x: item.x || 0,
+              y: item.y || 0,
+              points: item.points,
+              stroke: item.stroke,
+              strokeWidth: item.strokeWidth,
+              tension: 0.5,
+              lineCap: 'round',
+              lineJoin: 'round',
+              draggable: true,
+              name: 'draw-node'
+            }"
+            @click="() => toggleSelectDraw(item.id)"
+            @tap="() => toggleSelectDraw(item.id)"
+            @dragend="(e) => handleDrawDragEnd(item.id, e)"
+          />
+          <v-text
+            v-for="item in texts"
+            :key="item.id"
+            :ref="el => setTextNodeRef(item.id, el)"
+            :config="{
+              text: item.text,
+              x: item.x,
+              y: item.y,
+              fontSize: item.fontSize,
+              draggable: true,
+              width: item.width,
+              name: 'text-node',
+              visible: !(isEditing && editingId === item.id),
+              fill: item.fill || '#111827',
+              dragBoundFunc: function(pos) {
+                const iw = imageWidth.value || stageWidth
+                const ih = imageHeight.value || stageHeight
+                const w = Math.max(0, this.width())
+                const h = Math.max(0, this.height())
+                const minX = 0
+                const maxX = Math.max(0, iw - w)
+                const minY = 0
+                const maxY = Math.max(0, ih - h)
+                let nx = Math.min(Math.max(minX, pos.x), maxX)
+                let ny = Math.min(Math.max(minY, pos.y), maxY)
+                return { x: nx, y: ny }
+              },
+            }"
+            @click="() => toggleSelectText(item.id)"
+            @tap="() => toggleSelectText(item.id)"
+            @dblclick="() => handleTextDblClick(item.id)"
+            @dbltap="() => handleTextDblClick(item.id)"
+            @transform="() => handleTransform(item.id)"
+            @dragend="(e) => handleDragEnd(item.id, e)"
+          />
+          <v-transformer
+            v-if="selectedId && !isEditing"
+            ref="transformerRef"
+          />
+        </v-layer>
+      </v-stage>
+    </div>
     <div v-if="showTooltip" :style="{ position: 'absolute', left: tooltipX + 'px', top: tooltipY + 'px', transform: 'translate(-50%, -10%)' }" class="pointer-events-none">
       <div class="relative pointer-events-auto flex items-center gap-2 rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-gray-300">
         <div class="group relative">
@@ -220,6 +222,50 @@ function commitState() {
   historyState.value = { texts: texts.value, lines: lines.value }
   commit()
 }
+
+function load(file) {
+  if (!file) return
+  const url = URL.createObjectURL(file)
+  const img = new Image()
+  img.onload = () => {
+    imageObj.value = img
+    const w = img.naturalWidth || img.width || stageWidth
+    const h = img.naturalHeight || img.height || stageHeight
+    imageWidth.value = w
+    imageHeight.value = h
+    const stage = stageRef.value?.getNode?.()
+    if (stage) stage.size({ width: w, height: h })
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })
+    ctx.drawImage(img, 0, 0, w, h)
+    imageCanvas.value = canvas
+    imageCtx = ctx
+    URL.revokeObjectURL(url)
+  }
+  img.src = url
+}
+
+function dataURLToUint8Array(dataURL) {
+  const parts = (dataURL || '').split(',')
+  if (parts.length < 2) return new Uint8Array()
+  const base64 = parts[1]
+  const binary = atob(base64)
+  const len = binary.length
+  const bytes = new Uint8Array(len)
+  for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes
+}
+
+function exportImage() {
+  const stage = stageRef.value?.getNode?.()
+  if (!stage) return new Uint8Array()
+  const dataURL = stage.toDataURL({ mimeType: 'image/png', pixelRatio: 1 })
+  return dataURLToUint8Array(dataURL)
+}
+
+defineExpose({ load, export: exportImage })
 
 function handleUndo() {
   if (!canUndo.value) return
@@ -661,23 +707,6 @@ watch(selectedId, async (id) => {
   prevSelectedId.value = id || null
 })
 
-onMounted(() => {
-  const img = new Image()
-  img.crossOrigin = 'anonymous'
-  img.src = 'https://picsum.photos/800/600'
-  img.onload = () => {
-    imageObj.value = img
-    imageWidth.value = img.width || stageWidth
-    imageHeight.value = img.height || stageHeight
-    const canvas = document.createElement('canvas')
-    canvas.width = imageWidth.value
-    canvas.height = imageHeight.value
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-    imageCanvas.value = canvas
-    imageCtx = ctx
-  }
-})
 
 function getContrastingColorAt(x, y) {
   if (!imageCtx || !imageCanvas.value) return '#111827'
@@ -752,5 +781,10 @@ onBeforeUnmount(() => {
 .annotator-wrapper {
   position: relative;
   display: inline-block;
+}
+.stage-rounded {
+  border-radius: 10px;
+  overflow: hidden;
+  width: fit-content;
 }
 </style>
