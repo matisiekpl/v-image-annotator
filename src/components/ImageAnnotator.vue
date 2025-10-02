@@ -185,7 +185,7 @@ import { Button } from '@/components/ui/button'
 Konva._fixTextRendering = true
 
 const BASE_DRAW_STROKE = 5
-const BASE_TEXT_FONT_SIZE = 20
+const BASE_TEXT_FONT_SIZE = 24
 const BASE_TEXT_WIDTH = 200
 
 const stageWidth = 800
@@ -753,6 +753,7 @@ watch(selectedId, async (id) => {
 
 
 function getContrastingColorAt(x, y) {
+  return '#DF4B26';
   if (!imageCtx || !imageCanvas.value) return '#111827'
   const half = 4
   const ix = Math.max(0, Math.min(Math.floor(x), (imageCanvas.value.width - 1)))
