@@ -1,40 +1,47 @@
 <template>
   <div class="annotator-wrapper" ref="wrapperRef">
-    <div class="mb-2">
-      <button
+    <div class="mb-2 flex gap-2">
+      <Button
         type="button"
         :aria-pressed="addTextMode ? 'true' : 'false'"
         @click="toggleAddTextMode"
-        :class="addTextMode ? 'bg-blue-700 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'"
-        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+        :class="addTextMode ? 'brightness-75' : ''"
+        variant="outline"
       >
-        Add text
-      </button>
-      <button
-        type="button"
-        @click="handleUndo"
-        :disabled="!canUndo"
-        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
-      >
-        Undo
-      </button>
-      <button
-        type="button"
-        @click="handleRedo"
-        :disabled="!canRedo"
-        class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-40 bg-gray-600 hover:bg-gray-700"
-      >
-        Redo
-      </button>
-      <button
+        <TextCursor class="h-4 w-4" />
+        Insert Text
+      </Button>
+      <Button
         type="button"
         :aria-pressed="drawMode ? 'true' : 'false'"
         @click="toggleDrawMode"
-        :class="['ml-2', drawMode ? 'bg-emerald-700 hover:bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700']"
-        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        :class="drawMode ? 'brightness-75' : ''"
+        variant="outline"
+        >
+        <LineSquiggle class="h-4 w-4" />
+        Free Draw
+      </Button>
+      <Button>
+        color picker
+      </Button>
+      <Button
+        type="button"
+        @click="handleUndo"
+        :disabled="!canUndo"
+        variant="outline"
       >
-        Free draw
-      </button>
+        <Undo class="h-4 w-4" />
+        Undo
+      </Button>
+      <Button
+        type="button"
+        @click="handleRedo"
+        :disabled="!canRedo"
+        variant="outline"
+      >
+        <Redo class="h-4 w-4" />
+        Redo
+      </Button>
     </div>
     <v-stage
       ref="stageRef"
@@ -165,7 +172,8 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
 import { useManualRefHistory } from '@vueuse/core'
 import Konva from 'konva'
-import { Trash, Plus, Minus } from 'lucide-vue-next'
+import { Trash, Plus, Minus, TextCursor, LineSquiggle, Undo, Redo } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 
 Konva._fixTextRendering = true
 
@@ -220,6 +228,9 @@ function handleUndo() {
   lines.value = snap.lines || []
   isRestoring.value = false
   selectedId.value = null
+  isDrawing.value = false
+  addTextMode.value = false
+  drawMode.value = false
 }
 
 function handleRedo() {
@@ -231,6 +242,10 @@ function handleRedo() {
   lines.value = snap.lines || []
   isRestoring.value = false
   selectedId.value = null
+  isDrawing.value = false
+  addTextMode.value = false
+  drawMode.value = false
+
 }
 
 function setTextNodeRef(id, el) {
