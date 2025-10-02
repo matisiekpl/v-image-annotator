@@ -1,50 +1,54 @@
 <template>
   <div class="annotator-wrapper" ref="wrapperRef">
-    <div class="mb-2 flex gap-2">
-      <Button
-        type="button"
-        :aria-pressed="addTextMode ? 'true' : 'false'"
-        @click="toggleAddTextMode"
-        :class="addTextMode ? 'brightness-75' : ''"
-        variant="outline"
-      >
-        <TextCursor class="h-4 w-4" />
-        Insert Text
-      </Button>
-      <Button
-        type="button"
-        :aria-pressed="drawMode ? 'true' : 'false'"
-        @click="toggleDrawMode"
-        :class="drawMode ? 'brightness-75' : ''"
-        variant="outline"
-        >
-        <LineSquiggle class="h-4 w-4" />
-        Free Draw
-      </Button>
-      <label class="inline-flex items-center rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground shadow-sm">
-        <span class="sr-only">Color</span>
-        <input type="color" :value="drawPickerColor" @input="onDrawColorInput($event)" @change="onDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
-      </label>
-      <Button
-        type="button"
-        @click="handleUndo"
-        :disabled="!canUndo"
-        variant="outline"
-      >
-        <Undo class="h-4 w-4" />
-        Undo
-      </Button>
-      <Button
-        type="button"
-        @click="handleRedo"
-        :disabled="!canRedo"
-        variant="outline"
-      >
-        <Redo class="h-4 w-4" />
-        Redo
-      </Button>
-    </div>
     <div class="stage-rounded">
+      <div class="absolute left-2 top-2 z-10 flex gap-2 min-w-[400px]">
+        <Button
+          type="button"
+          :aria-pressed="addTextMode ? 'true' : 'false'"
+          @click="toggleAddTextMode"
+          :class="addTextMode ? 'brightness-75' : ''"
+          variant="outline"
+          size="xs"
+        >
+          <TextCursor class="h-4 w-4" />
+          Insert Text
+        </Button>
+        <Button
+          type="button"
+          :aria-pressed="drawMode ? 'true' : 'false'"
+          @click="toggleDrawMode"
+          :class="drawMode ? 'brightness-75' : ''"
+          variant="outline"
+          size="xs"
+          >
+          <LineSquiggle class="h-4 w-4" />
+          Free Draw
+        </Button>
+        <label class="h-7 inline-flex items-center rounded-md border border-input bg-background px-1.5 py-1 text-sm text-foreground shadow-sm">
+          <span class="sr-only">Color</span>
+          <input type="color" :value="drawPickerColor" @input="onDrawColorInput($event)" @change="onDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
+        </label>
+        <Button
+          type="button"
+          @click="handleUndo"
+          :disabled="!canUndo"
+          variant="outline"
+          size="xs"
+        >
+          <Undo class="h-4 w-4" />
+        
+        </Button>
+        <Button
+          type="button"
+          @click="handleRedo"
+          :disabled="!canRedo"
+          variant="outline"
+          size="xs"
+        >
+          <Redo class="h-4 w-4" />
+
+        </Button>
+      </div>
       <v-stage
         ref="stageRef"
         :config="{ width: stageWidth, height: stageHeight }"
@@ -580,6 +584,12 @@ const isSelectedText = computed(() => {
   return texts.value.some(t => t.id === id)
 })
 const drawPickerColor = computed(() => drawActiveColor.value)
+const currentColor = computed(() => {
+  const id = selectedId.value
+  if (!id) return '#111827'
+  const t = texts.value.find(t => t.id === id)
+  return t?.fill || '#111827'
+})
 
 function updateTooltipPosition() {
   const id = selectedId.value
@@ -626,6 +636,26 @@ function onDrawColorInput(e) {
 
 function onDrawColorChangeCommit() {
   if (selectedId.value && lines.value.some(l => l.id === selectedId.value)) commitState()
+}
+
+function onColorInput(e) {
+  const color = e.target.value
+  const id = selectedId.value
+  const idx = id ? texts.value.findIndex(t => t.id === id) : -1
+  if (idx !== -1) {
+    const updated = { ...texts.value[idx], fill: color }
+    texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
+    const nodeComp = textNodeRefs.get(id)
+    if (nodeComp) {
+      const node = nodeComp.getNode()
+      node.fill(color)
+      node.getLayer().batchDraw()
+    }
+  }
+}
+
+function onColorChangeCommit() {
+  if (selectedId.value && texts.value.some(t => t.id === selectedId.value)) commitState()
 }
 
 function adjustFontSize(delta) {
@@ -783,6 +813,7 @@ onBeforeUnmount(() => {
   display: inline-block;
 }
 .stage-rounded {
+  position: relative;
   border-radius: 10px;
   overflow: hidden;
   width: fit-content;

@@ -7,7 +7,7 @@ const annotatorRef = ref<any>(null)
 
 onMounted(async () => {
   try {
-    const res = await fetch('https://picsum.photos/1200/800', { mode: 'cors' })
+    const res = await fetch('https://picsum.photos/800/400', { mode: 'cors' })
     const blob = await res.blob()
     const file = new File([blob], 'picsum.jpg', { type: blob.type || 'image/jpeg' })
     annotatorRef.value?.load(file)
