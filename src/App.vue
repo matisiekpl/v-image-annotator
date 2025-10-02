@@ -60,5 +60,5 @@ function onExport() {
   <button @click="onExport" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm">Export PNG</button>
   <input ref="fileInput" type="file" accept="image/*,.heic,.heif" class="hidden" @change="onFileChange" />
  </div>
- <ImageAnnotator ref="annotatorRef" class="m-4 max-w-[400px]"/>
+ <ImageAnnotator ref="annotatorRef" class="w-wv"/>
 </template>

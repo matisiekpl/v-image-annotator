@@ -97,19 +97,19 @@
               name: 'text-node',
               visible: !(isEditing && editingId === item.id),
               fill: item.fill || '#111827',
-              dragBoundFunc: function(pos) {
-                const iw = imageWidth.value || stageWidth
-                const ih = imageHeight.value || stageHeight
-                const w = Math.max(0, this.width())
-                const h = Math.max(0, this.height())
-                const minX = 0
-                const maxX = Math.max(0, iw - w)
-                const minY = 0
-                const maxY = Math.max(0, ih - h)
-                let nx = Math.min(Math.max(minX, pos.x), maxX)
-                let ny = Math.min(Math.max(minY, pos.y), maxY)
-                return { x: nx, y: ny }
-              },
+              // dragBoundFunc: function(pos) {
+              //   const iw = imageWidth.value || stageWidth
+              //   const ih = imageHeight.value || stageHeight
+              //   const w = Math.max(0, this.width())
+              //   const h = Math.max(0, this.height())
+              //   const minX = 0
+              //   const maxX = Math.max(0, iw - w)
+              //   const minY = 0
+              //   const maxY = Math.max(0, ih - h)
+              //   let nx = Math.min(Math.max(minX, pos.x), maxX)
+              //   let ny = Math.min(Math.max(minY, pos.y), maxY)
+              //   return { x: nx, y: ny }
+              // },
             }"
             @click="() => toggleSelectText(item.id)"
             @tap="() => toggleSelectText(item.id)"
