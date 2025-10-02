@@ -184,8 +184,13 @@ import { Button } from '@/components/ui/button'
 
 Konva._fixTextRendering = true
 
+const BASE_DRAW_STROKE = 5
+const BASE_TEXT_FONT_SIZE = 20
+const BASE_TEXT_WIDTH = 200
+
 const stageWidth = 800
 const stageHeight = 600
+const stageScale = ref(1)
 
 const imageObj = ref(null)
 const imageWidth = ref(800)
@@ -237,8 +242,7 @@ function load(file) {
     const h = img.naturalHeight || img.height || stageHeight
     imageWidth.value = w
     imageHeight.value = h
-    const stage = stageRef.value?.getNode?.()
-    if (stage) stage.size({ width: w, height: h })
+    updateStageSizeForContainer()
     const canvas = document.createElement('canvas')
     canvas.width = w
     canvas.height = h
@@ -265,7 +269,9 @@ function dataURLToUint8Array(dataURL) {
 function exportImage() {
   const stage = stageRef.value?.getNode?.()
   if (!stage) return new Uint8Array()
-  const dataURL = stage.toDataURL({ mimeType: 'image/png', pixelRatio: 1 })
+  const s = stage.scaleX && stage.scaleX() ? stage.scaleX() : 1
+  const pr = s > 0 ? 1 / s : 1
+  const dataURL = stage.toDataURL({ mimeType: 'image/png', pixelRatio: pr })
   return dataURLToUint8Array(dataURL)
 }
 
@@ -342,7 +348,9 @@ function handleStageMouseDown(e) {
 
   if (drawMode.value) {
     const stage = stageRef.value.getNode()
-    const pos = stage.getPointerPosition()
+    const pointer = stage.getPointerPosition()
+    const scale = (stage.scaleX && stage.scaleX()) || 1
+    const pos = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
     const id = 'd_' + Date.now()
     const newLine = {
       id,
@@ -350,7 +358,7 @@ function handleStageMouseDown(e) {
       y: 0,
       points: [pos.x, pos.y],
       stroke: drawActiveColor.value,
-      strokeWidth: 5,
+      strokeWidth: BASE_DRAW_STROKE / scale,
     }
     lines.value = lines.value.concat([newLine])
     isDrawing.value = true
@@ -379,7 +387,9 @@ function handleStageMouseDown(e) {
 function handleStageMouseMove(e) {
   if (!isDrawing.value) return
   const stage = e.target.getStage()
-  const point = stage.getPointerPosition()
+  const pointer = stage.getPointerPosition()
+  const scale = (stage.scaleX && stage.scaleX()) || 1
+  const point = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
   if (!lines.value.length) return
   const last = lines.value[lines.value.length - 1]
   const updated = { ...last, points: last.points.concat([point.x, point.y]) }
@@ -389,16 +399,18 @@ function handleStageMouseMove(e) {
 function handleStageMouseUp() {
   if (addTextMode.value) {
     const stage = stageRef.value.getNode()
-    const pos = stage.getPointerPosition()
+    const pointer = stage.getPointerPosition()
+    const scale = (stage.scaleX && stage.scaleX()) || 1
+    const pos = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
     const id = 't_' + Date.now()
     const fillColor = getContrastingColorAt(pos.x, pos.y)
     const newItem = {
       id,
       text: '',
-      x: Math.min(Math.max(0, pos.x), Math.max(0, (imageWidth.value || stageWidth) - 200)),
-      y: Math.min(Math.max(0, pos.y), Math.max(0, (imageHeight.value || stageHeight) - 24)),
-      fontSize: 20,
-      width: 200,
+      x: Math.min(Math.max(0, pos.x), Math.max(0, (imageWidth.value || stageWidth) - BASE_TEXT_WIDTH / scale)),
+      y: Math.min(Math.max(0, pos.y), Math.max(0, (imageHeight.value || stageHeight) - (BASE_TEXT_FONT_SIZE + 4) / scale)),
+      fontSize: BASE_TEXT_FONT_SIZE / scale,
+      width: BASE_TEXT_WIDTH / scale,
       fill: fillColor,
     }
     texts.value = texts.value.concat([newItem])
@@ -490,9 +502,10 @@ function handleTextDblClick(id) {
   textarea.style.position = 'absolute'
   textarea.style.top = areaPosition.y + 'px'
   textarea.style.left = areaPosition.x + 'px'
-  textarea.style.width = textNodeKonva.width() - textNodeKonva.padding() * 2 + 'px'
-  textarea.style.height = textNodeKonva.height() - textNodeKonva.padding() * 2 + 5 + 'px'
-  textarea.style.fontSize = textNodeKonva.fontSize() + 'px'
+  const absScale = textNodeKonva.getAbsoluteScale().x || 1
+  setTextareaWidth(textNodeKonva.width() * absScale)
+  textarea.style.height = 'auto'
+  textarea.style.fontSize = (textNodeKonva.fontSize() * absScale) + 'px'
   textarea.style.border = 'none'
   textarea.style.padding = '0px'
   textarea.style.margin = '0px'
@@ -530,7 +543,8 @@ function handleTextDblClick(id) {
 
   function setTextareaWidth(newWidth) {
     if (!newWidth) {
-      newWidth = (textNodeKonva.placeholder?.length || 0) * textNodeKonva.fontSize()
+      const scale = textNodeKonva.getAbsoluteScale().x || 1
+      newWidth = (textNodeKonva.placeholder?.length || 0) * (textNodeKonva.fontSize() * scale)
     }
     textarea.style.width = newWidth + 'px'
   }
@@ -555,7 +569,7 @@ function handleTextDblClick(id) {
     const scale = textNodeKonva.getAbsoluteScale().x
     setTextareaWidth(textNodeKonva.width() * scale)
     textarea.style.height = 'auto'
-    textarea.style.height = textarea.scrollHeight + textNodeKonva.fontSize() + 'px'
+    textarea.style.height = textarea.scrollHeight + (textNodeKonva.fontSize() * scale) + 'px'
   })
 
   function handleOutsideClick(e) {
@@ -665,7 +679,7 @@ function adjustFontSize(delta) {
   if (idx === -1) return
   const current = texts.value[idx]
   const minSize = 10
-  const maxSize = 96
+  const maxSize = 988
   const nextSize = Math.min(maxSize, Math.max(minSize, current.fontSize + delta))
   if (nextSize === current.fontSize) return
   const updated = { ...current, fontSize: nextSize }
@@ -805,17 +819,50 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown)
 })
+
+function updateStageSizeForContainer() {
+  const baseW = imageWidth.value || stageWidth
+  const baseH = imageHeight.value || stageHeight
+  const wrapper = wrapperRef.value
+  const cw = wrapper ? wrapper.clientWidth : baseW
+  if (!cw) return
+  const s = cw / baseW
+  stageScale.value = s
+  const stage = stageRef.value?.getNode?.()
+  if (stage) {
+    stage.scale({ x: s, y: s })
+    stage.size({ width: Math.max(1, Math.round(baseW * s)), height: Math.max(1, Math.round(baseH * s)) })
+    stage.batchDraw()
+  }
+}
+
+let resizeObserver
+onMounted(() => {
+  const wrapper = wrapperRef.value
+  if (!wrapper) return
+  resizeObserver = new ResizeObserver(() => {
+    updateStageSizeForContainer()
+  })
+  resizeObserver.observe(wrapper)
+  updateStageSizeForContainer()
+})
+
+onBeforeUnmount(() => {
+  if (resizeObserver && wrapperRef.value) resizeObserver.unobserve(wrapperRef.value)
+  if (resizeObserver) resizeObserver.disconnect()
+})
 </script>
 
 <style scoped>
 .annotator-wrapper {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: 100%;
 }
 .stage-rounded {
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  width: fit-content;
+  width: 100%;
 }
 </style>
