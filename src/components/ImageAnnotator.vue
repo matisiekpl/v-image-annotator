@@ -21,9 +21,10 @@
         <LineSquiggle class="h-4 w-4" />
         Free Draw
       </Button>
-      <Button>
-        color picker
-      </Button>
+      <label class="inline-flex items-center rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground shadow-sm">
+        <span class="sr-only">Color</span>
+        <input type="color" :value="drawPickerColor" @input="onDrawColorInput($event)" @change="onDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
+      </label>
       <Button
         type="button"
         @click="handleUndo"
@@ -196,6 +197,7 @@ const drawMode = ref(false)
 const isDrawing = ref(false)
 const lines = ref([])
 const texts = ref([])
+const drawActiveColor = ref('#df4b26')
 const selectedId = ref(null)
 const isEditing = ref(false)
 const editingId = ref(null)
@@ -297,7 +299,7 @@ function handleStageMouseDown(e) {
       x: 0,
       y: 0,
       points: [pos.x, pos.y],
-      stroke: '#df4b26',
+      stroke: drawActiveColor.value,
       strokeWidth: 5,
     }
     lines.value = lines.value.concat([newLine])
@@ -531,14 +533,7 @@ const isSelectedText = computed(() => {
   if (!id) return false
   return texts.value.some(t => t.id === id)
 })
-const currentColor = computed(() => {
-  const id = selectedId.value
-  if (!id) return '#111827'
-  const textItem = texts.value.find(t => t.id === id)
-  if (textItem) return textItem.fill || '#111827'
-  const lineItem = lines.value.find(l => l.id === id)
-  return lineItem?.stroke || '#df4b26'
-})
+const drawPickerColor = computed(() => drawActiveColor.value)
 
 function updateTooltipPosition() {
   const id = selectedId.value
@@ -566,22 +561,10 @@ function deleteSelected() {
   commitState()
 }
 
-function onColorInput(e) {
+function onDrawColorInput(e) {
   const color = e.target.value
   const id = selectedId.value
-  if (!id) return
-  const tIdx = texts.value.findIndex(t => t.id === id)
-  if (tIdx !== -1) {
-    const updated = { ...texts.value[tIdx], fill: color }
-    texts.value = texts.value.slice(0, tIdx).concat([updated]).concat(texts.value.slice(tIdx + 1))
-    const nodeComp = textNodeRefs.get(id)
-    if (nodeComp) {
-      nodeComp.getNode().fill(color)
-      nodeComp.getNode().getLayer().batchDraw()
-    }
-    return
-  }
-  const lIdx = lines.value.findIndex(l => l.id === id)
+  const lIdx = id ? lines.value.findIndex(l => l.id === id) : -1
   if (lIdx !== -1) {
     const updated = { ...lines.value[lIdx], stroke: color }
     lines.value = lines.value.slice(0, lIdx).concat([updated]).concat(lines.value.slice(lIdx + 1))
@@ -590,11 +573,13 @@ function onColorInput(e) {
       nodeComp.getNode().stroke(color)
       nodeComp.getNode().getLayer().batchDraw()
     }
+    return
   }
+  drawActiveColor.value = color
 }
 
-function onColorChangeCommit() {
-  commitState()
+function onDrawColorChangeCommit() {
+  if (selectedId.value && lines.value.some(l => l.id === selectedId.value)) commitState()
 }
 
 function adjustFontSize(delta) {
