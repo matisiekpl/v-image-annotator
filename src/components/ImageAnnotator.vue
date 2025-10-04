@@ -514,8 +514,8 @@ function handleTextDblClick(id) {
   const stageBox = stage.container().getBoundingClientRect()
 
   const areaPosition = {
-    x: stageBox.left + textPosition.x,
-    y: stageBox.top + textPosition.y,
+    x: textPosition.x,
+    y: textPosition.y,
   }
 
   const textarea = document.createElement('textarea')
