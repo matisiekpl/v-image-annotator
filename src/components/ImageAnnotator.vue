@@ -26,7 +26,7 @@
         </Button>
         <label class="h-7 inline-flex items-center rounded-md border border-input bg-background px-1.5 py-1 text-sm text-foreground shadow-sm">
           <span class="sr-only">Color</span>
-          <input type="color" :value="drawPickerColor" @input="onDrawColorInput($event)" @change="onDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
+          <input type="color" :value="drawPickerColor" @input="onToolbarDrawColorInput($event)" @change="onToolbarDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
         </label>
         <Button
           type="button"
@@ -176,8 +176,8 @@
         </div>
         <div class="h-4 w-px bg-gray-200" />
         <label class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 cursor-pointer">
-          <span class="sr-only">Text color</span>
-          <input type="color" :value="currentColor" @input="onColorInput($event)" @change="onColorChangeCommit" class="h-4 w-6 border-0 p-0 bg-transparent cursor-pointer" />
+          <span class="sr-only">Color</span>
+          <input type="color" :value="selectedNodeColor" @input="onNodeColorInput($event)" @change="onNodeColorChangeCommit" class="h-4 w-6 border-0 p-0 bg-transparent cursor-pointer" />
         </label>
       </div>
     </div>
@@ -536,6 +536,7 @@ function handleTextDblClick(id) {
   textarea.style.background = 'none'
   textarea.style.outline = 'none'
   textarea.style.resize = 'none'
+  textarea.style.pointerEvents = 'auto'
   textarea.style.lineHeight = textNodeKonva.lineHeight()
   textarea.style.fontFamily = textNodeKonva.fontFamily()
   textarea.style.transformOrigin = 'left top'
@@ -621,11 +622,14 @@ const isSelectedText = computed(() => {
   return texts.value.some(t => t.id === id)
 })
 const drawPickerColor = computed(() => drawActiveColor.value)
-const currentColor = computed(() => {
+const selectedNodeColor = computed(() => {
   const id = selectedId.value
   if (!id) return '#111827'
   const t = texts.value.find(t => t.id === id)
-  return t?.fill || '#111827'
+  if (t) return t.fill || '#111827'
+  const l = lines.value.find(l => l.id === id)
+  if (l) return l.stroke || '#111827'
+  return '#111827'
 })
 
 const canReset = computed(() => {
@@ -658,10 +662,31 @@ function deleteSelected() {
   commitState()
 }
 
-function onDrawColorInput(e) {
+function onToolbarDrawColorInput(e) {
+  const color = e.target.value
+  drawActiveColor.value = color
+}
+
+function onToolbarDrawColorChangeCommit() {
+}
+
+function onNodeColorInput(e) {
   const color = e.target.value
   const id = selectedId.value
-  const lIdx = id ? lines.value.findIndex(l => l.id === id) : -1
+  if (!id) return
+  const tIdx = texts.value.findIndex(t => t.id === id)
+  if (tIdx !== -1) {
+    const updated = { ...texts.value[tIdx], fill: color }
+    texts.value = texts.value.slice(0, tIdx).concat([updated]).concat(texts.value.slice(tIdx + 1))
+    const nodeComp = textNodeRefs.get(id)
+    if (nodeComp) {
+      const node = nodeComp.getNode()
+      node.fill(color)
+      node.getLayer().batchDraw()
+    }
+    return
+  }
+  const lIdx = lines.value.findIndex(l => l.id === id)
   if (lIdx !== -1) {
     const updated = { ...lines.value[lIdx], stroke: color }
     lines.value = lines.value.slice(0, lIdx).concat([updated]).concat(lines.value.slice(lIdx + 1))
@@ -670,33 +695,13 @@ function onDrawColorInput(e) {
       nodeComp.getNode().stroke(color)
       nodeComp.getNode().getLayer().batchDraw()
     }
-    return
   }
-  drawActiveColor.value = color
 }
 
-function onDrawColorChangeCommit() {
-  if (selectedId.value && lines.value.some(l => l.id === selectedId.value)) commitState()
-}
-
-function onColorInput(e) {
-  const color = e.target.value
+function onNodeColorChangeCommit() {
   const id = selectedId.value
-  const idx = id ? texts.value.findIndex(t => t.id === id) : -1
-  if (idx !== -1) {
-    const updated = { ...texts.value[idx], fill: color }
-    texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
-    const nodeComp = textNodeRefs.get(id)
-    if (nodeComp) {
-      const node = nodeComp.getNode()
-      node.fill(color)
-      node.getLayer().batchDraw()
-    }
-  }
-}
-
-function onColorChangeCommit() {
-  if (selectedId.value && texts.value.some(t => t.id === selectedId.value)) commitState()
+  if (!id) return
+  if (texts.value.some(t => t.id === id) || lines.value.some(l => l.id === id)) commitState()
 }
 
 function adjustFontSize(delta) {
