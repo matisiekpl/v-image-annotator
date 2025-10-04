@@ -14,21 +14,22 @@ yarn add v-image-annotator
 
 ```vue
 <script setup lang="ts">
-import {ref} from 'vue';
-import {ImageAnnotatorManager, ImageAnnotator} from "v-image-annotator";
-
-const annotatorRef = ref<ImageAnnotatorManager>(null);
-
-function load(file: File) {
-    annotatorRef.value?.load(file);
-}
-
-function render() {
-    const bytes = annotatorRef.value?.export();
-    return bytes;
-}
+    import { ref } from 'vue';
+    import { ImageAnnotatorManager, ImageAnnotator } from "v-image-annotator";
+    
+    const annotatorRef = ref<ImageAnnotatorManager>(null);
+    
+    function load(file: File) {
+        annotatorRef.value?.load(file);
+    }
+    
+    function render() {
+        const bytes = annotatorRef.value?.export();
+        return bytes;
+    }
 </script>
+
 <template>
-  <ImageAnnotator ref="annotatorRef"/>
+    <ImageAnnotator ref="annotatorRef"/>
 </template>
 ```
