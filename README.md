@@ -2,6 +2,8 @@
 
 > Vue Component that allows to annotate images by text or free-drawn lines.
 
+![screenshot.png](screenshot.png)
+
 ### Install
 
 ```bash
