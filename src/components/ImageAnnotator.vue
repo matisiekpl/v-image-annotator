@@ -1,5 +1,5 @@
 <template>
-  <div class="annotator-wrapper" ref="wrapperRef" style="position: relative; display: block; width: 100%;">
+  <div class="annotator-wrapper" ref="wrapperRef" style="position: relative; display: block; width: 100%;" id="annotator-wrapper">
     <div class="stage-rounded" style="position: relative; border-radius: 10px; overflow: hidden; width: 100%;">
       <div class="absolute left-2 top-2 z-10 flex gap-2 min-w-[400px]">
         <Button
@@ -519,7 +519,7 @@ function handleTextDblClick(id) {
   }
 
   const textarea = document.createElement('textarea')
-  document.body.appendChild(textarea)
+  document.getElementById('annotator-wrapper').appendChild(textarea)
 
   textarea.value = textNodeKonva.text()
   textarea.style.position = 'absolute'
