@@ -3,8 +3,9 @@ import { ref, onMounted } from 'vue'
 import { isHeic, heicTo } from 'heic-to'
 // @ts-ignore
 import ImageAnnotator from './components/ImageAnnotator.vue'
+import type {ImageAnnotatorManager} from "@/components/imageAnnotator.ts";
 
-const annotatorRef = ref<any>(null)
+const annotatorRef = ref<ImageAnnotatorManager | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 onMounted(async () => {
@@ -42,7 +43,7 @@ async function onFileChange(e: Event) {
 function onExport() {
   const bytes = annotatorRef.value?.export()
   if (!bytes || bytes.length === 0) return
-  const blob = new Blob([bytes], { type: 'image/png' })
+  const blob = new Blob([bytes as any], { type: 'image/png' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -60,5 +61,7 @@ function onExport() {
   <button @click="onExport" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm">Export PNG</button>
   <input ref="fileInput" type="file" accept="image/*,.heic,.heif" class="hidden" @change="onFileChange" />
  </div>
- <ImageAnnotator ref="annotatorRef" class="w-wv"/>
+ <div class="m-4">
+  <ImageAnnotator ref="annotatorRef" />
+ </div>
 </template>
