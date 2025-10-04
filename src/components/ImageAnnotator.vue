@@ -187,7 +187,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
-import { useManualRefHistory } from '@vueuse/core'
+import { useManualRefHistory, onKeyStroke } from '@vueuse/core'
 import Konva from 'konva'
 import { Trash, Plus, Minus, TextCursor, LineSquiggle, Undo, Redo } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -298,7 +298,6 @@ function handleUndo() {
   selectedId.value = null
   isDrawing.value = false
   addTextMode.value = false
-  drawMode.value = false
 }
 
 function handleRedo() {
@@ -312,8 +311,6 @@ function handleRedo() {
   selectedId.value = null
   isDrawing.value = false
   addTextMode.value = false
-  drawMode.value = false
-
 }
 
 function handleReset() {
@@ -875,6 +872,20 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown)
   setStageCursor('default')
+})
+
+onKeyStroke(['t', 'T'], (e) => {
+  if (isEditing.value) return
+  if (isEditableTarget(e.target)) return
+  e.preventDefault()
+  toggleAddTextMode()
+})
+
+onKeyStroke(['d', 'D'], (e) => {
+  if (isEditing.value) return
+  if (isEditableTarget(e.target)) return
+  e.preventDefault()
+  toggleDrawMode()
 })
 
 function updateStageSizeForContainer() {
