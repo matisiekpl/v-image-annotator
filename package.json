@@ -19,7 +19,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/image-annotator.es.js",
+      "import": "./dist/image-annotator.js",
       "require": "./dist/image-annotator.umd.cjs"
     },
     "./style.css": "./dist/style.css"
