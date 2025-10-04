@@ -48,6 +48,16 @@
           <Redo class="h-4 w-4" />
 
         </Button>
+        <Button
+          type="button"
+          @click="handleReset"
+          :disabled="!canReset"
+          variant="outline"
+          size="xs"
+        >
+          <Trash class="h-4 w-4" />
+          Reset
+        </Button>
       </div>
       <v-stage
         ref="stageRef"
@@ -304,6 +314,19 @@ function handleRedo() {
   addTextMode.value = false
   drawMode.value = false
 
+}
+
+function handleReset() {
+  if ((texts.value?.length || 0) === 0 && (lines.value?.length || 0) === 0) return
+  texts.value = []
+  lines.value = []
+  selectedId.value = null
+  isDrawing.value = false
+  addTextMode.value = false
+  drawMode.value = false
+  isEditing.value = false
+  editingId.value = null
+  commitState()
 }
 
 function setTextNodeRef(id, el) {
@@ -603,6 +626,10 @@ const currentColor = computed(() => {
   if (!id) return '#111827'
   const t = texts.value.find(t => t.id === id)
   return t?.fill || '#111827'
+})
+
+const canReset = computed(() => {
+  return (texts.value && texts.value.length > 0) || (lines.value && lines.value.length > 0)
 })
 
 function updateTooltipPosition() {
