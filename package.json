@@ -11,6 +11,7 @@
     "annotation"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/matisiekpl/v-image-annotator",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/image-annotator.umd.cjs",
