@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/matisiekpl/v-image-annotator",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "main": "./dist/image-annotator.umd.cjs",
   "module": "./dist/image-annotator.es.js",
