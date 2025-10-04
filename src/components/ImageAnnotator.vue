@@ -1,6 +1,6 @@
 <template>
-  <div class="annotator-wrapper" ref="wrapperRef">
-    <div class="stage-rounded">
+  <div class="annotator-wrapper" ref="wrapperRef" style="position: relative; display: block; width: 100%;">
+    <div class="stage-rounded" style="position: relative; border-radius: 10px; overflow: hidden; width: 100%;">
       <div class="absolute left-2 top-2 z-10 flex gap-2 min-w-[400px]">
         <Button
           type="button"
@@ -881,16 +881,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-.annotator-wrapper {
-  position: relative;
-  display: block;
-  width: 100%;
-}
-.stage-rounded {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  width: 100%;
-}
-</style>
+
