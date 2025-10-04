@@ -2,7 +2,7 @@
 
 > Vue Component that allows to annotate images by text or free-drawn lines.
 
-![screenshot.png](screenshot.png)
+<img width="1392" height="881" alt="screenshot" src="https://github.com/user-attachments/assets/f14d0950-77d2-49d5-a678-b887ef437ade" />
 
 ### Install
 
