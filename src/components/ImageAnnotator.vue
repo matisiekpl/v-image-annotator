@@ -346,7 +346,29 @@ function toggleAddTextMode() {
 
 function toggleDrawMode() {
   drawMode.value = !drawMode.value
+  if (drawMode.value) {
+    addTextMode.value = false
+  }
 }
+
+function setStageCursor(cursor) {
+  const stage = stageRef.value?.getNode?.()
+  if (!stage) return
+  const container = stage.container && stage.container()
+  if (!container) return
+  container.style.cursor = cursor || 'default'
+}
+
+watch(addTextMode, (active) => {
+  if (active) setStageCursor('text')
+  else setStageCursor('default')
+}, { immediate: true })
+
+watch(drawMode, (active) => {
+  if (addTextMode.value) return
+  if (active) setStageCursor('crosshair')
+  else setStageCursor('default')
+}, { immediate: true })
 
 function toggleSelectText(id) {
   if (selectedId.value === id) {
@@ -786,7 +808,7 @@ watch(selectedId, async (id) => {
 
 
 function getContrastingColorAt(x, y) {
-  return '#DF4B26';
+  //return '#DF4B26';
   if (!imageCtx || !imageCanvas.value) return '#111827'
   const half = 4
   const ix = Math.max(0, Math.min(Math.floor(x), (imageCanvas.value.width - 1)))
@@ -852,6 +874,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown)
+  setStageCursor('default')
 })
 
 function updateStageSizeForContainer() {
