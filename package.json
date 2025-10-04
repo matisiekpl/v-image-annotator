@@ -1,7 +1,17 @@
 {
   "name": "v-image-annotator",
-  "private": true,
-  "version": "0.0.0",
+  "author": "Mateusz Woźniak <matisiek11@gmail.com>",
+  "description": "Vue Component that allows to annotate images by text or free-drawn lines",
+  "keywords": [
+    "image",
+    "vue",
+    "annotator",
+    "drawing",
+    "text",
+    "annotation"
+  ],
+  "license": "MIT",
+  "version": "0.0.1",
   "type": "module",
   "main": "./dist/image-annotator.umd.cjs",
   "module": "./dist/image-annotator.es.js",
