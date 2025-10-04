@@ -537,6 +537,7 @@ function handleTextDblClick(id) {
   textarea.style.outline = 'none'
   textarea.style.resize = 'none'
   textarea.style.pointerEvents = 'auto'
+  textarea.style.zIndex = '1000'
   textarea.style.lineHeight = textNodeKonva.lineHeight()
   textarea.style.fontFamily = textNodeKonva.fontFamily()
   textarea.style.transformOrigin = 'left top'
