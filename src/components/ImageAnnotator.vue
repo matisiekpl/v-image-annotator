@@ -1,5 +1,6 @@
 <template>
-  <div class="annotator-wrapper" ref="wrapperRef" style="position: relative; display: block; width: 100%;" id="annotator-wrapper">
+  <div class="annotator-wrapper" ref="wrapperRef" style="position: relative; display: block; width: 100%;"
+       id="annotator-wrapper">
     <div class="stage-rounded" style="position: relative; border-radius: 10px; overflow: hidden; width: 100%;">
       <div class="absolute left-2 top-2 z-10 flex gap-2 min-w-[400px]">
         <Button
@@ -10,8 +11,10 @@
           variant="outline"
           size="xs"
         >
-          <TextCursor class="h-4 w-4" />
+          <TextCursor class="h-4 w-4"/>
           Insert Text
+          <div class="border-l h-full mx-1"></div>
+          T
         </Button>
         <Button
           type="button"
@@ -20,13 +23,17 @@
           :class="drawMode ? 'brightness-75' : ''"
           variant="outline"
           size="xs"
-          >
-          <LineSquiggle class="h-4 w-4" />
+        >
+          <LineSquiggle class="h-4 w-4"/>
           Free Draw
+          <div class="border-l h-full mx-1"></div>
+          D
         </Button>
-        <label class="h-7 inline-flex items-center rounded-md border border-input bg-background px-1.5 py-1 text-sm text-foreground shadow-sm">
+        <label
+          class="h-7 inline-flex items-center rounded-md border border-input bg-background px-1.5 py-1 text-sm text-foreground shadow-sm">
           <span class="sr-only">Color</span>
-          <input type="color" :value="drawPickerColor" @input="onToolbarDrawColorInput($event)" @change="onToolbarDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer" />
+          <input type="color" :value="drawPickerColor" @input="onToolbarDrawColorInput($event)"
+                 @change="onToolbarDrawColorChangeCommit" class="h-6 w-8 border-0 p-0 bg-transparent cursor-pointer"/>
         </label>
         <Button
           type="button"
@@ -35,8 +42,8 @@
           variant="outline"
           size="xs"
         >
-          <Undo class="h-4 w-4" />
-        
+          <Undo class="h-4 w-4"/>
+
         </Button>
         <Button
           type="button"
@@ -45,7 +52,7 @@
           variant="outline"
           size="xs"
         >
-          <Redo class="h-4 w-4" />
+          <Redo class="h-4 w-4"/>
 
         </Button>
         <Button
@@ -55,7 +62,7 @@
           variant="outline"
           size="xs"
         >
-          <Trash class="h-4 w-4" />
+          <Trash class="h-4 w-4"/>
           Reset
         </Button>
       </div>
@@ -135,30 +142,37 @@
         </v-layer>
       </v-stage>
     </div>
-    <div v-if="showTooltip" :style="{ position: 'absolute', left: tooltipX + 'px', top: tooltipY + 'px', transform: 'translate(-50%, -100%)' }" class="pointer-events-none">
-      <div class="relative pointer-events-auto flex items-center gap-2 rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-gray-300">
+    <div v-if="showTooltip"
+         :style="{ position: 'absolute', left: tooltipX + 'px', top: tooltipY + 'px', transform: 'translate(-50%, -100%)' }"
+         class="pointer-events-none">
+      <div
+        class="relative pointer-events-auto flex items-center gap-2 rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-gray-300">
         <div class="group relative">
           <button
             type="button"
             @click="deleteSelected"
             class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <Trash class="h-4 w-4" />
+            <Trash class="h-4 w-4"/>
           </button>
-          <div class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity" role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '60px', textAlign: 'center' }">
+          <div
+            class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"
+            role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '60px', textAlign: 'center' }">
             Delete
           </div>
         </div>
-        <div v-if="isSelectedText" class="h-4 w-px bg-gray-200" />
+        <div v-if="isSelectedText" class="h-4 w-px bg-gray-200"/>
         <div v-if="isSelectedText" class="group relative">
           <button
             type="button"
             @click="adjustFontSize(-2)"
             class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <Minus class="h-4 w-4" />
+            <Minus class="h-4 w-4"/>
           </button>
-          <div class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity" role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '120px', textAlign: 'center' }">
+          <div
+            class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"
+            role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '120px', textAlign: 'center' }">
             Decrease font size
           </div>
         </div>
@@ -168,29 +182,34 @@
             @click="adjustFontSize(2)"
             class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <Plus class="h-4 w-4" />
+            <Plus class="h-4 w-4"/>
           </button>
-          <div class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity" role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '120px', textAlign: 'center' }">
+          <div
+            class="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"
+            role="tooltip" :style="{ whiteSpace: 'nowrap', minWidth: '120px', textAlign: 'center' }">
             Increase font size
           </div>
         </div>
-        <div class="h-4 w-px bg-gray-200" />
-        <label class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 cursor-pointer">
+        <div class="h-4 w-px bg-gray-200"/>
+        <label
+          class="inline-flex items-center rounded p-1.5 text-sm text-gray-700 hover:bg-gray-100 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 cursor-pointer">
           <span class="sr-only">Color</span>
-          <input type="color" :value="selectedNodeColor" @input="onNodeColorInput($event)" @change="onNodeColorChangeCommit" class="h-4 w-6 border-0 p-0 bg-transparent cursor-pointer" />
+          <input type="color" :value="selectedNodeColor" @input="onNodeColorInput($event)"
+                 @change="onNodeColorChangeCommit" class="h-4 w-6 border-0 p-0 bg-transparent cursor-pointer"/>
         </label>
       </div>
     </div>
   </div>
-  
+
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
-import { useManualRefHistory, onKeyStroke } from '@vueuse/core'
+import {ref, onMounted, onBeforeUnmount, watch, nextTick, computed} from 'vue'
+import {useManualRefHistory, onKeyStroke} from '@vueuse/core'
 import Konva from 'konva'
-import { Trash, Plus, Minus, TextCursor, LineSquiggle, Undo, Redo } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
+import {Trash, Plus, Minus, TextCursor, LineSquiggle, Undo, Redo} from 'lucide-vue-next'
+import {Button} from '@/components/ui/button'
+import {Badge} from "@/components/ui/badge/index.js";
 
 Konva._fixTextRendering = true
 
@@ -228,17 +247,17 @@ const textNodeRefs = new Map()
 const drawNodeRefs = new Map()
 
 const isRestoring = ref(false)
-const historyState = ref({ texts: [], lines: [] })
+const historyState = ref({texts: [], lines: []})
 
 watch([texts, lines], () => {
   if (isRestoring.value) return
-  historyState.value = { texts: texts.value, lines: lines.value }
-}, { deep: true })
+  historyState.value = {texts: texts.value, lines: lines.value}
+}, {deep: true})
 
-const { undo, redo, canUndo, canRedo, commit } = useManualRefHistory(historyState, { capacity: 100, clone: true })
+const {undo, redo, canUndo, canRedo, commit} = useManualRefHistory(historyState, {capacity: 100, clone: true})
 
 function commitState() {
-  historyState.value = { texts: texts.value, lines: lines.value }
+  historyState.value = {texts: texts.value, lines: lines.value}
   commit()
 }
 
@@ -256,7 +275,7 @@ function load(file) {
     const canvas = document.createElement('canvas')
     canvas.width = w
     canvas.height = h
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })
+    const ctx = canvas.getContext('2d', {willReadFrequently: true})
     ctx.drawImage(img, 0, 0, w, h)
     imageCanvas.value = canvas
     imageCtx = ctx
@@ -281,11 +300,11 @@ function exportImage() {
   if (!stage) return new Uint8Array()
   const s = stage.scaleX && stage.scaleX() ? stage.scaleX() : 1
   const pr = s > 0 ? 1 / s : 1
-  const dataURL = stage.toDataURL({ mimeType: 'image/png', pixelRatio: pr })
+  const dataURL = stage.toDataURL({mimeType: 'image/png', pixelRatio: pr})
   return dataURLToUint8Array(dataURL)
 }
 
-defineExpose({ load, export: exportImage })
+defineExpose({load, export: exportImage})
 
 function handleUndo() {
   if (!canUndo.value) return
@@ -359,13 +378,13 @@ function setStageCursor(cursor) {
 watch(addTextMode, (active) => {
   if (active) setStageCursor('text')
   else setStageCursor('default')
-}, { immediate: true })
+}, {immediate: true})
 
 watch(drawMode, (active) => {
   if (addTextMode.value) return
   if (active) setStageCursor('crosshair')
   else setStageCursor('default')
-}, { immediate: true })
+}, {immediate: true})
 
 function toggleSelectText(id) {
   if (selectedId.value === id) {
@@ -392,7 +411,7 @@ function handleStageMouseDown(e) {
     const stage = stageRef.value.getNode()
     const pointer = stage.getPointerPosition()
     const scale = (stage.scaleX && stage.scaleX()) || 1
-    const pos = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
+    const pos = {x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale}
     const id = 'd_' + Date.now()
     const newLine = {
       id,
@@ -431,10 +450,10 @@ function handleStageMouseMove(e) {
   const stage = e.target.getStage()
   const pointer = stage.getPointerPosition()
   const scale = (stage.scaleX && stage.scaleX()) || 1
-  const point = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
+  const point = {x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale}
   if (!lines.value.length) return
   const last = lines.value[lines.value.length - 1]
-  const updated = { ...last, points: last.points.concat([point.x, point.y]) }
+  const updated = {...last, points: last.points.concat([point.x, point.y])}
   lines.value = lines.value.slice(0, lines.value.length - 1).concat([updated])
 }
 
@@ -443,7 +462,7 @@ function handleStageMouseUp() {
     const stage = stageRef.value.getNode()
     const pointer = stage.getPointerPosition()
     const scale = (stage.scaleX && stage.scaleX()) || 1
-    const pos = { x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale }
+    const pos = {x: (pointer?.x || 0) / scale, y: (pointer?.y || 0) / scale}
     const id = 't_' + Date.now()
     const fillColor = getContrastingColorAt(pos.x, pos.y)
     const newItem = {
@@ -465,7 +484,9 @@ function handleStageMouseUp() {
         transformer.nodes([nodeComp.getNode()])
         transformer.getLayer().batchDraw()
       }
-      const raf = window.requestAnimationFrame || function(cb){ return setTimeout(cb, 0) }
+      const raf = window.requestAnimationFrame || function (cb) {
+        return setTimeout(cb, 0)
+      }
       raf(() => {
         handleTextDblClick(id)
       })
@@ -485,7 +506,7 @@ function handleTransform(id) {
   const newWidth = Math.max(30, node.width() * scaleX)
   const idx = texts.value.findIndex(t => t.id === id)
   if (idx !== -1) {
-    const updated = { ...texts.value[idx], width: newWidth }
+    const updated = {...texts.value[idx], width: newWidth}
     texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
   }
   node.width(newWidth)
@@ -503,10 +524,10 @@ function handleDragEnd(id, e) {
   const raw = node.position()
   const x = Math.min(Math.max(0, raw.x), Math.max(0, iw - w))
   const y = Math.min(Math.max(0, raw.y), Math.max(0, ih - h))
-  node.position({ x, y })
+  node.position({x, y})
   const idx = texts.value.findIndex(t => t.id === id)
   if (idx !== -1) {
-    const updated = { ...texts.value[idx], x, y }
+    const updated = {...texts.value[idx], x, y}
     texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
   }
   updateTooltipPosition()
@@ -518,7 +539,7 @@ function handleDrawDragEnd(id, e) {
   const pos = node.position()
   const idx = lines.value.findIndex(l => l.id === id)
   if (idx !== -1) {
-    const updated = { ...lines.value[idx], x: pos.x, y: pos.y }
+    const updated = {...lines.value[idx], x: pos.x, y: pos.y}
     lines.value = lines.value.slice(0, idx).concat([updated]).concat(lines.value.slice(idx + 1))
     commitState()
   }
@@ -597,7 +618,7 @@ function handleTextDblClick(id) {
     if (e.key === 'Enter' && !e.shiftKey) {
       const idx = texts.value.findIndex(t => t.id === id)
       if (idx !== -1) {
-        const updated = { ...texts.value[idx], text: textarea.value }
+        const updated = {...texts.value[idx], text: textarea.value}
         texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
       }
       removeTextarea()
@@ -620,13 +641,14 @@ function handleTextDblClick(id) {
     if (e.target !== textarea) {
       const idx = texts.value.findIndex(t => t.id === id)
       if (idx !== -1) {
-        const updated = { ...texts.value[idx], text: textarea.value }
+        const updated = {...texts.value[idx], text: textarea.value}
         texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
       }
       removeTextarea()
       commitState()
     }
   }
+
   setTimeout(() => {
     window.addEventListener('click', handleOutsideClick)
     window.addEventListener('touchstart', handleOutsideClick)
@@ -696,7 +718,7 @@ function onNodeColorInput(e) {
   if (!id) return
   const tIdx = texts.value.findIndex(t => t.id === id)
   if (tIdx !== -1) {
-    const updated = { ...texts.value[tIdx], fill: color }
+    const updated = {...texts.value[tIdx], fill: color}
     texts.value = texts.value.slice(0, tIdx).concat([updated]).concat(texts.value.slice(tIdx + 1))
     const nodeComp = textNodeRefs.get(id)
     if (nodeComp) {
@@ -708,7 +730,7 @@ function onNodeColorInput(e) {
   }
   const lIdx = lines.value.findIndex(l => l.id === id)
   if (lIdx !== -1) {
-    const updated = { ...lines.value[lIdx], stroke: color }
+    const updated = {...lines.value[lIdx], stroke: color}
     lines.value = lines.value.slice(0, lIdx).concat([updated]).concat(lines.value.slice(lIdx + 1))
     const nodeComp = drawNodeRefs.get(id)
     if (nodeComp) {
@@ -734,7 +756,7 @@ function adjustFontSize(delta) {
   const maxSize = 988
   const nextSize = Math.min(maxSize, Math.max(minSize, current.fontSize + delta))
   if (nextSize === current.fontSize) return
-  const updated = { ...current, fontSize: nextSize }
+  const updated = {...current, fontSize: nextSize}
   texts.value = texts.value.slice(0, idx).concat([updated]).concat(texts.value.slice(idx + 1))
   const nodeComp = textNodeRefs.get(id)
   if (nodeComp) {
@@ -765,7 +787,7 @@ watch(selectedId, async (id) => {
     transformer.nodes([node])
     transformer.enabledAnchors(['middle-left', 'middle-right'])
     transformer.rotateEnabled(false)
-    transformer.boundBoxFunc(function(oldBox, newBox) {
+    transformer.boundBoxFunc(function (oldBox, newBox) {
       const iw = imageWidth.value || stageWidth
       const minWidth = 30
       let x = newBox.x
@@ -780,7 +802,7 @@ watch(selectedId, async (id) => {
         width = Math.max(minWidth, iw - x)
       }
       width = Math.max(minWidth, width)
-      return { ...newBox, x, width }
+      return {...newBox, x, width}
     })
     transformer.getLayer().batchDraw()
     node.on('dragmove', updateTooltipPosition)
@@ -789,7 +811,7 @@ watch(selectedId, async (id) => {
   } else if (id && drawNodeRefs.has(id)) {
     const node = drawNodeRefs.get(id).getNode()
     transformer.nodes([node])
-    transformer.enabledAnchors(['top-left','top-center','top-right','middle-left','middle-right','bottom-left','bottom-center','bottom-right'])
+    transformer.enabledAnchors(['top-left', 'top-center', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'])
     transformer.rotateEnabled(false)
     transformer.boundBoxFunc(null)
     transformer.getLayer().batchDraw()
@@ -898,8 +920,8 @@ function updateStageSizeForContainer() {
   stageScale.value = s
   const stage = stageRef.value?.getNode?.()
   if (stage) {
-    stage.scale({ x: s, y: s })
-    stage.size({ width: Math.max(1, Math.round(baseW * s)), height: Math.max(1, Math.round(baseH * s)) })
+    stage.scale({x: s, y: s})
+    stage.size({width: Math.max(1, Math.round(baseW * s)), height: Math.max(1, Math.round(baseH * s))})
     stage.batchDraw()
   }
 }
